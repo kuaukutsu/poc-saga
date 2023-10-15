@@ -41,17 +41,17 @@ final class TestTransaction extends TransactionBase
     public function steps(): TransactionStepCollection
     {
         return new TransactionStepCollection(
-            ObjectBaseDto::hydrate(
+            TransactionStepDto::hydrate(
                 [
                     'class' => TestStepOne::class,
                 ]
             ),
-            ObjectBaseDto::hydrate(
+            TransactionStepDto::hydrate(
                 [
                     'class' => TestStepTwo::class,
                 ]
             ),
-            ObjectBaseDto::hydrate(
+            TransactionStepDto::hydrate(
                 [
                     'class' => TestStepAnother::class,
                 ]

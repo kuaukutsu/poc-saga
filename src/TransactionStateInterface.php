@@ -24,6 +24,11 @@ interface TransactionStateInterface
     public function get(string $stepName): TransactionDataInterface;
 
     /**
+     * @param class-string<TransactionStepInterface> $stepName
+     */
+    public function delete(string $stepName): void;
+
+    /**
      * Каждый шаг может сохранять своё значение от выполнения действия.
      * В стеке содержится вся информация по выполненным шагам.
      */

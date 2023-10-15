@@ -30,6 +30,11 @@ final class TransactionState implements TransactionStateInterface
             ?? throw new TransactionStateNotFoundException($stepName);
     }
 
+    public function delete(string $stepName): void
+    {
+        unset($this->state[$stepName]);
+    }
+
     public function stack(): TransactionStateCollection
     {
         return $this->stackToCollection($this->state);

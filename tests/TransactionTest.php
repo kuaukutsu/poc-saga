@@ -41,6 +41,8 @@ final class TransactionTest extends TestCase
             new TestTransaction()
         );
 
+        self::assertCount(2, $transaction->state);
+
         /** @var array{"name": string, "datetime": string} $stateOne */
         $stateOne = $transaction->state
             ->getData(OneStep::class)
