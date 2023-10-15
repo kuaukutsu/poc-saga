@@ -7,10 +7,13 @@ namespace kuaukutsu\poc\saga\tests;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
-use kuaukutsu\poc\saga\exception\TransactionProcessingException;
-use kuaukutsu\poc\saga\tests\stub\TestTransactionFailure;
 use PHPUnit\Framework\TestCase;
+use kuaukutsu\poc\saga\tests\stub\TestTransactionException;
+use kuaukutsu\poc\saga\tests\stub\TestTransactionFailure;
+use kuaukutsu\poc\saga\dto\TransactionStateCollection;
+use kuaukutsu\poc\saga\exception\TransactionProcessingException;
 use kuaukutsu\poc\saga\handler\TransactionRunner;
+use kuaukutsu\poc\saga\RollbackCallback;
 
 final class TransactionFailureTest extends TestCase
 {
@@ -29,10 +32,29 @@ final class TransactionFailureTest extends TestCase
     {
         $this->expectException(TransactionProcessingException::class);
 
-        $transaction = $this->runner->run(
-            new TestTransactionFailure()
+        $this->runner->run(
+            new TestTransactionFailure(),
+            new RollbackCallback(
+                static function (TransactionStateCollection $storage): void {
+                    // в стеке первые два шага, в том числе Failure
+                    self::assertCount(2, $storage);
+                }
+            )
         );
+    }
 
-        self::assertNotEmpty($transaction->uuid);
+    public function testException(): void
+    {
+        $this->expectException(TransactionProcessingException::class);
+
+        $this->runner->run(
+            new TestTransactionException(),
+            new RollbackCallback(
+                static function (TransactionStateCollection $storage): void {
+                    // в стеке только первый шаг, так как второй Exception
+                    self::assertCount(1, $storage);
+                }
+            )
+        );
     }
 }

@@ -6,7 +6,7 @@ namespace kuaukutsu\poc\saga\tests\stub;
 
 use kuaukutsu\poc\saga\TransactionStepBase;
 
-final class FailureStep extends TransactionStepBase
+final class ExceptionStep extends TransactionStepBase
 {
     public function __construct(
         public readonly string $name,
@@ -24,7 +24,9 @@ final class FailureStep extends TransactionStepBase
             )
         );
 
-        return false;
+        throw new \RuntimeException(
+            'RuntimeException from FailureStep.'
+        );
     }
 
     public function rollback(): bool
