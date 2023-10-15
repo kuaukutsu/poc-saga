@@ -15,7 +15,9 @@ final class FailureStep extends TransactionStepBase
 
     public function commit(): bool
     {
-        return false;
+        throw new \RuntimeException(
+            'RuntimeException from FailureStep.'
+        );
     }
 
     public function rollback(): bool
