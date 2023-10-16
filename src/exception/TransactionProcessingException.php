@@ -6,13 +6,13 @@ namespace kuaukutsu\poc\saga\exception;
 
 use Throwable;
 use RuntimeException;
-use kuaukutsu\poc\saga\dto\TransactionStepDto;
+use kuaukutsu\poc\saga\step\TransactionStep;
 
 final class TransactionProcessingException extends RuntimeException
 {
     public function __construct(
         string $uuid,
-        TransactionStepDto $stepConfiguration,
+        TransactionStep $stepConfiguration,
         ?Throwable $previous = null,
     ) {
         $message = "[$uuid] $stepConfiguration->class step failed.";

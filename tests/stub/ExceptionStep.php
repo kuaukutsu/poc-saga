@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\tests\stub;
 
-use kuaukutsu\poc\saga\TransactionStepBase;
+use kuaukutsu\poc\saga\step\TransactionStepBase;
+use RuntimeException;
 
 final class ExceptionStep extends TransactionStepBase
 {
@@ -24,7 +25,7 @@ final class ExceptionStep extends TransactionStepBase
             )
         );
 
-        throw new \RuntimeException(
+        throw new RuntimeException(
             'RuntimeException from FailureStep.'
         );
     }

@@ -2,14 +2,10 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga\handler;
+namespace kuaukutsu\poc\saga\state;
 
-use kuaukutsu\poc\saga\dto\TransactionStateCollection;
-use kuaukutsu\poc\saga\dto\TransactionStateDto;
 use kuaukutsu\poc\saga\exception\TransactionStateNotFoundException;
-use kuaukutsu\poc\saga\TransactionDataInterface;
-use kuaukutsu\poc\saga\TransactionStateInterface;
-use kuaukutsu\poc\saga\TransactionStepInterface;
+use kuaukutsu\poc\saga\step\TransactionStepInterface;
 
 final class TransactionState implements TransactionStateInterface
 {
@@ -35,7 +31,7 @@ final class TransactionState implements TransactionStateInterface
         unset($this->state[$stepName]);
     }
 
-    public function stack(): TransactionStateCollection
+    public function stack(): TransactionStepStateCollection
     {
         return $this->stackToCollection($this->state);
     }
@@ -43,23 +39,18 @@ final class TransactionState implements TransactionStateInterface
     /**
      * @param array<string, TransactionDataInterface> $stack
      */
-    private function stackToCollection(array $stack): TransactionStateCollection
+    private function stackToCollection(array $stack): TransactionStepStateCollection
     {
         if ($stack === []) {
-            return new TransactionStateCollection();
+            return new TransactionStepStateCollection();
         }
 
-        return new TransactionStateCollection(
+        return new TransactionStepStateCollection(
             ...array_map(
                 static fn(
                     string $step,
                     TransactionDataInterface $data
-                ): TransactionStateDto => TransactionStateDto::hydrate(
-                    [
-                        'step' => $step,
-                        'data' => $data,
-                    ]
-                ),
+                ): TransactionStepState => new TransactionStepState($step, $data),
                 array_keys($stack),
                 $stack
             )

@@ -8,12 +8,12 @@ use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
 use kuaukutsu\poc\saga\CommitCallback;
-use kuaukutsu\poc\saga\dto\TransactionStateCollection;
+use kuaukutsu\poc\saga\handler\TransactionRunner;
+use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
 use kuaukutsu\poc\saga\tests\stub\OneStep;
+use kuaukutsu\poc\saga\tests\stub\TestTransaction;
 use kuaukutsu\poc\saga\tests\stub\TwoStep;
 use PHPUnit\Framework\TestCase;
-use kuaukutsu\poc\saga\handler\TransactionRunner;
-use kuaukutsu\poc\saga\tests\stub\TestTransaction;
 
 final class TransactionCallbackTest extends TestCase
 {
@@ -33,16 +33,11 @@ final class TransactionCallbackTest extends TestCase
         $transaction = $this->runner->run(
             new TestTransaction(),
             new CommitCallback(
-                static function (TransactionStateCollection $storage): void {
+                static function (TransactionStepStateCollection $storage): void {
                     $list = $storage->toArrayRecursive();
-                    foreach ($list as $item) {
-                        self::assertArrayHasKey('step', $item);
-                        self::assertArrayHasKey('data', $item);
-
-                        $data = $item['data'];
+                    foreach ($list as $step => $data) {
                         self::assertArrayHasKey('name', $data);
-
-                        switch ($item['step']) {
+                        switch ($step) {
                             case OneStep::class:
                                 self::assertEquals('one', $data['name']);
                                 break;

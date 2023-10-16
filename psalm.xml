@@ -2,7 +2,7 @@
 <psalm
         checkForThrowsInGlobalScope="true"
         ensureArrayStringOffsetsExist="true"
-        errorLevel="2"
+        errorLevel="1"
         findUnusedPsalmSuppress="true"
         findUnusedBaselineEntry="true"
         findUnusedCode="false"

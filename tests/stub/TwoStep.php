@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\tests\stub;
 
-use kuaukutsu\poc\saga\TransactionStepBase;
+use kuaukutsu\poc\saga\step\TransactionStepBase;
 
 final class TwoStep extends TransactionStepBase
 {
