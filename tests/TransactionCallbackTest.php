@@ -34,6 +34,8 @@ final class TransactionCallbackTest extends TestCase
             new TestTransaction(),
             new CommitCallback(
                 static function (TransactionStepStateCollection $storage): void {
+                    self::assertNotEmpty($storage->get(OneStep::class));
+
                     $list = $storage->toArrayRecursive();
                     foreach ($list as $step => $data) {
                         self::assertArrayHasKey('name', $data);
