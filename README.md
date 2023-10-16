@@ -19,12 +19,12 @@
 - Чем меньше будет размер "действия", тем больше будет над ним контроля.
 - Для любого атомарного действия, можно написать его анти-действие.
 
-Если совсем кратко, то решение заключается в том, чтобы разделить один набор действий на максимально атомарные шаги,
-и для каждого шага выполнения написать его компенсирующий шаг.
+Решение заключается в том, чтобы разделить один набор действий на максимально атомарные, небольшие задачи,
+и для каждого шага выполнения (commit) написать его компенсирующий шаг (rollback).
 
-Из этого получаем следующую схему:
+Получаем следующую схему:
 
-- Любое действие можно представить как **Транзакцию (transaction)**, которая состоит из отдельных **Шагов (step)**.
+- Любое действие можно представить как **Транзакцию (transaction)**, которая состоит из **Шагов (step)**.
 - Каждый **шаг** умеет выполнять два действия: **commit** и **rollback**, и если выполнить сначала commit, а затем
   rollback, то состояние системы должно быть ровно таким же как если бы ничего не выполнялось.
 - Все шаги выполняются последовательно, если какой-то шаг не выполнился, то вся транзакция не выполнилась.
@@ -41,19 +41,16 @@ final class TestTransaction extends TransactionBase
     public function steps(): TransactionStepCollection
     {
         return new TransactionStepCollection(
-            TransactionStepDto::hydrate(
+            new TransactionStep(
+                OneStep::class,
                 [
-                    'class' => TestStepOne::class,
+                    'name' => 'one',
                 ]
             ),
-            TransactionStepDto::hydrate(
+            new TransactionStep(
+                TwoStep::class,
                 [
-                    'class' => TestStepTwo::class,
-                ]
-            ),
-            TransactionStepDto::hydrate(
-                [
-                    'class' => TestStepAnother::class,
+                    'name' => 'two',
                 ]
             ),
         );
@@ -64,26 +61,32 @@ final class TestTransaction extends TransactionBase
 Описываем шаги
 
 ```php
-final class TestStep extends TransactionStepBase
+final class OneStep extends TransactionStepBase
 {
+    public function __construct(
+        public readonly string $name,
+    ) {
+    }
+
     public function commit(): bool
     {
         // Полезная работа: запись в хранилище, в очередь...
-        
+    
         $this->save(
-            TestStepDto::hydrate(
+            TestTransactionData::hydrate(
                 [
-                    'id' => ..., // например ID полученный на запись в хранилище                   
+                    'name' => $this->name,
+                    'datetime' => gmdate('c'),
                 ]
             )
         );
-    
+
         return true;
     }
 
     public function rollback(): bool
     {
-        /** @var TestStepDto $data */
+        /** @var TestTransactionData $data */
         $data = $this->get(self::class); // получаем Состояние сохранённое при commit
         
         // Полезная работа: удаление из хранилища, компенсационная задача в очередь 
@@ -96,10 +99,13 @@ final class TestStep extends TransactionStepBase
 Инициируем экземпляр транзакции, и запускаем
 
 ```php
-$transaction = new TestTransaction();
-
-/** @var TransactionRunner $transactionRunner */
-$transactionRunner->run($transaction);
+/** 
+ * @var TransactionRunner $transactionRunner 
+ * @var TransactionResult $transaction
+ */
+$transaction = $transactionRunner->run(
+    new TestTransaction()
+);
 ```
 
 Так же есть возможность подписаться на события commit и rollback, для того чтобы получить доступ к результату из вне.
@@ -127,15 +133,16 @@ $transactionRunner->run(
 
 ```php
 
-/** @var TransactionRunner $transactionRunner */
-$dto = $transactionRunner->run(
+/** 
+ * @var TransactionRunner $transactionRunner 
+ * @var TransactionResult $transaction
+ */
+$transaction = $transactionRunner->run(
     new TestTransaction()
 );
 
-/** @var TransactionDto $dto */
-
-/** @var TestStepDto $dataFromTestStep */
-$dataFromTestStep = $dto->state->getData(TestStep::class);
+/** @var TestTransactionData $dataFromTestStep */
+$dataFromTestStep = $transaction->state->getData(OneStep::class);
 ```
 
 

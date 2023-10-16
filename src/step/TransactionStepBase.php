@@ -25,9 +25,9 @@ abstract class TransactionStepBase implements TransactionStepInterface
         return $this->uuid;
     }
 
-    final protected function save(TransactionDataInterface $dto): void
+    final protected function save(TransactionDataInterface $data): void
     {
-        $this->state->set(static::class, $dto);
+        $this->state->set(static::class, $data);
     }
 
     /**

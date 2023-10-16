@@ -7,15 +7,12 @@ namespace kuaukutsu\poc\saga\state;
 use kuaukutsu\poc\saga\exception\TransactionStateNotFoundException;
 use kuaukutsu\poc\saga\step\TransactionStepInterface;
 
-/**
- * На тот случай, если будет реализация с persistent storage
- */
 interface TransactionStateInterface
 {
     /**
      * @param class-string<TransactionStepInterface> $stepName
      */
-    public function set(string $stepName, TransactionDataInterface $dto): void;
+    public function set(string $stepName, TransactionDataInterface $data): void;
 
     /**
      * @param class-string<TransactionStepInterface> $stepName
