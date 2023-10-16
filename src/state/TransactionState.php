@@ -11,19 +11,22 @@ final class TransactionState implements TransactionStateInterface
 {
     /**
      * При желании можно заменить на persistent storage.
-     * @var array<class-string<TransactionStepInterface>, TransactionDataInterface>
+     * @var array<class-string<TransactionStepInterface>, TransactionStepState>
      */
     private array $state = [];
 
-    public function set(string $stepName, TransactionDataInterface $dto): void
+    public function set(string $stepName, TransactionDataInterface $data): void
     {
-        $this->state[$stepName] = $dto;
+        $this->state[$stepName] = new TransactionStepState($stepName, $data);
     }
 
     public function get(string $stepName): TransactionDataInterface
     {
-        return $this->state[$stepName]
-            ?? throw new TransactionStateNotFoundException($stepName);
+        if (array_key_exists($stepName, $this->state)) {
+            return $this->state[$stepName]->data;
+        }
+
+        throw new TransactionStateNotFoundException($stepName);
     }
 
     public function delete(string $stepName): void
@@ -33,27 +36,6 @@ final class TransactionState implements TransactionStateInterface
 
     public function stack(): TransactionStepStateCollection
     {
-        return $this->stackToCollection($this->state);
-    }
-
-    /**
-     * @param array<string, TransactionDataInterface> $stack
-     */
-    private function stackToCollection(array $stack): TransactionStepStateCollection
-    {
-        if ($stack === []) {
-            return new TransactionStepStateCollection();
-        }
-
-        return new TransactionStepStateCollection(
-            ...array_map(
-                static fn(
-                    string $step,
-                    TransactionDataInterface $data
-                ): TransactionStepState => new TransactionStepState($step, $data),
-                array_keys($stack),
-                $stack
-            )
-        );
+        return new TransactionStepStateCollection(...$this->state);
     }
 }
