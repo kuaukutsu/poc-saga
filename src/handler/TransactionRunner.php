@@ -7,15 +7,17 @@ namespace kuaukutsu\poc\saga\handler;
 use Throwable;
 use Exception;
 use Ramsey\Uuid\UuidFactory;
-use kuaukutsu\poc\saga\dto\TransactionStateCollection;
-use kuaukutsu\poc\saga\dto\TransactionStateDto;
-use kuaukutsu\poc\saga\dto\TransactionDto;
 use kuaukutsu\poc\saga\exception\TransactionProcessingException;
-use kuaukutsu\poc\saga\CommitCallback;
-use kuaukutsu\poc\saga\RollbackCallback;
+use kuaukutsu\poc\saga\state\TransactionState;
+use kuaukutsu\poc\saga\state\TransactionStepState;
+use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
+use kuaukutsu\poc\saga\step\TransactionStepFactory;
+use kuaukutsu\poc\saga\step\TransactionStepInterface;
 use kuaukutsu\poc\saga\TransactionCallbackInterface;
 use kuaukutsu\poc\saga\TransactionInterface;
-use kuaukutsu\poc\saga\TransactionStepInterface;
+use kuaukutsu\poc\saga\TransactionResult;
+use kuaukutsu\poc\saga\RollbackCallback;
+use kuaukutsu\poc\saga\CommitCallback;
 
 final class TransactionRunner
 {
@@ -32,7 +34,7 @@ final class TransactionRunner
     public function run(
         TransactionInterface $transaction,
         TransactionCallbackInterface ...$listCallback,
-    ): TransactionDto {
+    ): TransactionResult {
         $uuid = $this->uuidFactory->uuid7()->toString();
 
         [$commitCallback, $rollbackCallback] = $this->prepareCallback($listCallback);
@@ -45,7 +47,7 @@ final class TransactionRunner
                 $isSuccess = $step->commit();
             } catch (Throwable $exception) {
                 $state = $this->state->stack()->filter(
-                    static fn(TransactionStateDto $state): bool => $state->step !== $stepConfiguration->class
+                    static fn(TransactionStepState $state): bool => $state->step !== $stepConfiguration->class
                 );
                 $this->rollbackStack($stack);
                 $this->callbackRollback(
@@ -83,12 +85,7 @@ final class TransactionRunner
             $commitCallback,
         );
 
-        return TransactionDto::hydrate(
-            [
-                'uuid' => $uuid,
-                'state' => $this->state->stack(),
-            ]
-        );
+        return new TransactionResult($uuid, $this->state->stack());
     }
 
     /**
@@ -129,7 +126,7 @@ final class TransactionRunner
     private function callbackRollback(
         string $uuid,
         Throwable $exception,
-        TransactionStateCollection $stackState,
+        TransactionStepStateCollection $stackState,
         ?RollbackCallback $classCallback,
         ?RollbackCallback $funcCallback,
     ): void {
@@ -139,7 +136,7 @@ final class TransactionRunner
 
     private function callbackCommit(
         string $uuid,
-        TransactionStateCollection $stackState,
+        TransactionStepStateCollection $stackState,
         ?CommitCallback $classCallback,
         ?CommitCallback $funcCallback,
     ): void {

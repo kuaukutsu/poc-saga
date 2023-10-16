@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga;
+namespace kuaukutsu\poc\saga\step;
 
 use kuaukutsu\poc\saga\exception\TransactionStateNotFoundException;
+use kuaukutsu\poc\saga\state\TransactionDataInterface;
+use kuaukutsu\poc\saga\state\TransactionStateInterface;
 
 abstract class TransactionStepBase implements TransactionStepInterface
 {

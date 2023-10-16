@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\tests\stub;
 
-use kuaukutsu\poc\saga\dto\TransactionStepCollection;
-use kuaukutsu\poc\saga\dto\TransactionStepDto;
+use kuaukutsu\poc\saga\step\TransactionStep;
+use kuaukutsu\poc\saga\step\TransactionStepCollection;
 use kuaukutsu\poc\saga\TransactionBase;
 
 final class TestTransaction extends TransactionBase
@@ -13,20 +13,16 @@ final class TestTransaction extends TransactionBase
     public function steps(): TransactionStepCollection
     {
         return new TransactionStepCollection(
-            TransactionStepDto::hydrate(
+            new TransactionStep(
+                OneStep::class,
                 [
-                    'class' => OneStep::class,
-                    'params' => [
-                        'name' => 'one',
-                    ],
+                    'name' => 'one',
                 ]
             ),
-            TransactionStepDto::hydrate(
+            new TransactionStep(
+                TwoStep::class,
                 [
-                    'class' => TwoStep::class,
-                    'params' => [
-                        'name' => 'two',
-                    ],
+                    'name' => 'two',
                 ]
             ),
         );

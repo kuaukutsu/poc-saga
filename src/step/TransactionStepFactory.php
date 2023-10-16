@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga\handler;
+namespace kuaukutsu\poc\saga\step;
 
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
-use kuaukutsu\poc\saga\dto\TransactionStepDto;
-use kuaukutsu\poc\saga\TransactionStepInterface;
 
 use function DI\autowire;
 
@@ -18,7 +16,7 @@ final class TransactionStepFactory
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public function create(TransactionStepDto $stepConfiguration): TransactionStepInterface
+    public function create(TransactionStep $stepConfiguration): TransactionStepInterface
     {
         $definition = autowire($stepConfiguration->class);
         foreach ($stepConfiguration->params as $key => $value) {

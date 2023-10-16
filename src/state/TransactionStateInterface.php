@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga;
+namespace kuaukutsu\poc\saga\state;
 
-use kuaukutsu\poc\saga\dto\TransactionStateCollection;
 use kuaukutsu\poc\saga\exception\TransactionStateNotFoundException;
+use kuaukutsu\poc\saga\step\TransactionStepInterface;
 
 /**
  * На тот случай, если будет реализация с persistent storage
@@ -32,5 +32,5 @@ interface TransactionStateInterface
      * Каждый шаг может сохранять своё значение от выполнения действия.
      * В стеке содержится вся информация по выполненным шагам.
      */
-    public function stack(): TransactionStateCollection;
+    public function stack(): TransactionStepStateCollection;
 }

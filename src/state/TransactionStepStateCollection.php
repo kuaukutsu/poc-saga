@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga\dto;
+namespace kuaukutsu\poc\saga\state;
 
 use kuaukutsu\ds\collection\Collection;
-use kuaukutsu\poc\saga\TransactionDataInterface;
 
 /**
- * @extends Collection<TransactionStateDto>
+ * @extends Collection<TransactionStepState>
  */
-final class TransactionStateCollection extends Collection
+final class TransactionStepStateCollection extends Collection
 {
     public function getType(): string
     {
-        return TransactionStateDto::class;
+        return TransactionStepState::class;
     }
 
     public function getData(string $stepName): ?TransactionDataInterface
@@ -26,14 +25,14 @@ final class TransactionStateCollection extends Collection
     {
         $collection = [];
         foreach ($this as $item) {
-            $collection[] = $item->toArrayRecursive();
+            $collection[$item->step] = $item->data->toArray();
         }
 
         return $collection;
     }
 
     /**
-     * @param TransactionStateDto $item
+     * @param TransactionStepState $item
      */
     protected function indexBy($item): string
     {

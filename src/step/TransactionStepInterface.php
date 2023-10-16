@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga;
+namespace kuaukutsu\poc\saga\step;
+
+use kuaukutsu\poc\saga\state\TransactionStateInterface;
 
 interface TransactionStepInterface
 {
