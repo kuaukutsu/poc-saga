@@ -21,11 +21,14 @@ use kuaukutsu\poc\saga\CommitCallback;
 
 final class TransactionRunner
 {
+    private readonly string $uuid;
+
     public function __construct(
         private readonly TransactionStepFactory $stepFactory,
         private readonly TransactionState $state,
-        private readonly UuidFactory $uuidFactory,
+        UuidFactory $uuidFactory,
     ) {
+        $this->uuid = $uuidFactory->uuid7()->toString();
     }
 
     /**
@@ -35,15 +38,13 @@ final class TransactionRunner
         TransactionInterface $transaction,
         TransactionCallbackInterface ...$listCallback,
     ): TransactionResult {
-        $uuid = $this->uuidFactory->uuid7()->toString();
-
         [$commitCallback, $rollbackCallback] = $this->prepareCallback($listCallback);
 
         $stack = [];
         foreach ($transaction->steps() as $stepConfiguration) {
             try {
                 $step = $this->stepFactory->create($stepConfiguration);
-                $step->bind($uuid, $this->state);
+                $step->bind($this->uuid, $this->state);
                 $isSuccess = $step->commit();
             } catch (Throwable $exception) {
                 $state = $this->state->stack()->filter(
@@ -51,23 +52,23 @@ final class TransactionRunner
                 );
                 $this->rollbackStack($stack);
                 $this->callbackRollback(
-                    $uuid,
+                    $this->uuid,
                     $exception,
                     $state,
                     $transaction->getRollbackCallback(),
                     $rollbackCallback,
                 );
 
-                throw new TransactionProcessingException($uuid, $stepConfiguration, $exception);
+                throw new TransactionProcessingException($this->uuid, $stepConfiguration, $exception);
             }
 
             $stack[] = $step;
             if ($isSuccess === false) {
-                $exception = new TransactionProcessingException($uuid, $stepConfiguration);
+                $exception = new TransactionProcessingException($this->uuid, $stepConfiguration);
                 $state = $this->state->stack();
                 $this->rollbackStack($stack);
                 $this->callbackRollback(
-                    $uuid,
+                    $this->uuid,
                     $exception,
                     $state,
                     $transaction->getRollbackCallback(),
@@ -79,13 +80,13 @@ final class TransactionRunner
         }
 
         $this->callbackCommit(
-            $uuid,
+            $this->uuid,
             $this->state->stack(),
             $transaction->getCommitCallback(),
             $commitCallback,
         );
 
-        return new TransactionResult($uuid, $this->state->stack());
+        return new TransactionResult($this->uuid, $this->state->stack());
     }
 
     /**

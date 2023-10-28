@@ -3,7 +3,8 @@
   "description": "Proof of Concept: SAGA pattern",
   "keywords": [
     "proof of concept",
-    "yii2"
+    "pattern",
+    "saga"
   ],
   "license": "BSD-3-Clause",
   "authors": [
@@ -18,7 +19,6 @@
   },
   "require": {
     "php": "^8.1",
-    "kuaukutsu/ds-dto": "^2.0.1",
     "kuaukutsu/ds-collection": "^2.0.3",
     "ramsey/uuid": "^4.7",
     "php-di/php-di": "^7.0.5"
@@ -27,6 +27,7 @@
     "vimeo/psalm": "^5.15",
     "friendsofphp/php-cs-fixer": "^3.13",
     "icanhazstring/composer-unused": "^0.8",
+    "kuaukutsu/ds-dto": "^2.0.1",
     "phpunit/phpunit": "^9.5",
     "rector/rector": "^0.18",
     "roave/infection-static-analysis-plugin": "^1.3",
