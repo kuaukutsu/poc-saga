@@ -10,8 +10,14 @@ use kuaukutsu\poc\saga\state\TransactionStateInterface;
 
 abstract class TransactionStepBase implements TransactionStepInterface
 {
+    /**
+     * @psalm-immutable
+     */
     private string $uuid;
 
+    /**
+     * @psalm-immutable
+     */
     private TransactionStateInterface $state;
 
     final public function bind(string $uuid, TransactionStateInterface $state): void

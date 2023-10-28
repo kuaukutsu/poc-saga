@@ -18,6 +18,7 @@
     <issueHandlers>
         <MixedArrayAccess errorLevel="suppress"/>
         <MixedArrayAssignment errorLevel="suppress"/>
+        <MixedPropertyTypeCoercion errorLevel="info"/>
         <UncaughtThrowInGlobalScope errorLevel="info"/>
     </issueHandlers>
 </psalm>
