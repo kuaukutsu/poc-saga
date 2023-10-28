@@ -6,9 +6,9 @@ namespace kuaukutsu\poc\saga\tests\stub;
 
 use kuaukutsu\poc\saga\step\TransactionStep;
 use kuaukutsu\poc\saga\step\TransactionStepCollection;
-use kuaukutsu\poc\saga\TransactionBase;
+use kuaukutsu\poc\saga\TransactionInterface;
 
-final class TestTransactionException extends TransactionBase
+final class TestTransactionException implements TransactionInterface
 {
     public function steps(): TransactionStepCollection
     {
