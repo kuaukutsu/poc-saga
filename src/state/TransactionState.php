@@ -29,13 +29,13 @@ final class TransactionState implements TransactionStateInterface
         throw new TransactionStateNotFoundException($stepName);
     }
 
-    public function delete(string $stepName): void
-    {
-        unset($this->state[$stepName]);
-    }
-
     public function stack(): TransactionStepStateCollection
     {
         return new TransactionStepStateCollection(...$this->state);
+    }
+
+    public function clean(): void
+    {
+        $this->state = [];
     }
 }

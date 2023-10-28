@@ -77,10 +77,7 @@ final class TransactionRunner
             }
         }
 
-        return $this->commit(
-            $this->state->stack(),
-            $commitCallback,
-        );
+        return $this->commit($this->state->stack(), $commitCallback);
     }
 
     /**
@@ -108,16 +105,14 @@ final class TransactionRunner
         ?RollbackCallback $callback,
     ): void {
         while ($this->stack->isEmpty() === false) {
-            $step = $this->stack->dequeue();
             try {
-                $step->rollback();
+                $this->stack->dequeue()->rollback();
             } catch (Exception) {
                 continue;
             }
-
-            $this->state->delete($step::class);
         }
 
+        $this->state->clean();
         $callback?->handler($stackState, $exception, $this->uuid);
     }
 
