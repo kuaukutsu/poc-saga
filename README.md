@@ -36,7 +36,7 @@
 Описываем транзакцию как набор шагов
 
 ```php
-final class TestTransaction extends TransactionBase
+final class TestTransaction implements TransactionInterface
 {
     public function steps(): TransactionStepCollection
     {
