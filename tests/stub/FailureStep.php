@@ -15,6 +15,8 @@ final class FailureStep extends TransactionStepBase
 
     public function commit(): bool
     {
+        Storage::set($this->name, 'test-failure');
+
         $this->save(
             TestTransactionData::hydrate(
                 [
@@ -29,6 +31,8 @@ final class FailureStep extends TransactionStepBase
 
     public function rollback(): bool
     {
+        Storage::delete($this->name);
+
         return true;
     }
 }

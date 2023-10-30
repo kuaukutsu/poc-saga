@@ -8,27 +8,25 @@ use kuaukutsu\poc\saga\step\TransactionStep;
 use kuaukutsu\poc\saga\step\TransactionStepCollection;
 use kuaukutsu\poc\saga\TransactionInterface;
 
-final class TestTransaction implements TransactionInterface
+final class TestTransactionRollback implements TransactionInterface
 {
+    public function __construct(private readonly string $name)
+    {
+    }
+
     public function steps(): TransactionStepCollection
     {
         return new TransactionStepCollection(
             new TransactionStep(
-                OneStep::class,
-                [
-                    'name' => 'one',
-                ]
-            ),
-            new TransactionStep(
-                TwoStep::class,
-                [
-                    'name' => 'two',
-                ]
-            ),
-            new TransactionStep(
                 SaveStep::class,
                 [
-                    'name' => 'save',
+                    'name' => $this->name,
+                ]
+            ),
+            new TransactionStep(
+                FailureStep::class,
+                [
+                    'name' => 'failure',
                 ]
             ),
         );

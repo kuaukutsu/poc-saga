@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga\handler;
+namespace kuaukutsu\poc\saga;
 
-use SplQueue;
+use SplStack;
 use Throwable;
 use Exception;
 use Ramsey\Uuid\UuidFactory;
@@ -14,20 +14,15 @@ use kuaukutsu\poc\saga\state\TransactionStepState;
 use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
 use kuaukutsu\poc\saga\step\TransactionStepFactory;
 use kuaukutsu\poc\saga\step\TransactionStepInterface;
-use kuaukutsu\poc\saga\TransactionCallbackInterface;
-use kuaukutsu\poc\saga\TransactionInterface;
-use kuaukutsu\poc\saga\TransactionResult;
-use kuaukutsu\poc\saga\RollbackCallback;
-use kuaukutsu\poc\saga\CommitCallback;
 
 final class TransactionRunner
 {
     private readonly string $uuid;
 
     /**
-     * @var SplQueue<TransactionStepInterface>
+     * @var SplStack<TransactionStepInterface>
      */
-    private readonly SplQueue $stack;
+    private readonly SplStack $stack;
 
     public function __construct(
         private readonly TransactionStepFactory $stepFactory,
@@ -35,7 +30,7 @@ final class TransactionRunner
         UuidFactory $uuidFactory,
     ) {
         $this->uuid = $uuidFactory->uuid7()->toString();
-        $this->stack = new SplQueue();
+        $this->stack = new SplStack();
     }
 
     /**
@@ -64,7 +59,7 @@ final class TransactionRunner
                 throw new TransactionProcessingException($this->uuid, $stepConfiguration, $exception);
             }
 
-            $this->stack->enqueue($step);
+            $this->stack->push($step);
             if ($isSuccess === false) {
                 $exception = new TransactionProcessingException($this->uuid, $stepConfiguration);
                 $this->rollback(
@@ -104,9 +99,9 @@ final class TransactionRunner
         TransactionStepStateCollection $stackState,
         ?RollbackCallback $callback,
     ): void {
-        while ($this->stack->isEmpty() === false) {
+        foreach ($this->stack as $step) {
             try {
-                $this->stack->dequeue()->rollback();
+                $step->rollback();
             } catch (Exception) {
                 continue;
             }
