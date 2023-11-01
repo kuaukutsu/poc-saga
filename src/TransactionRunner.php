@@ -56,12 +56,12 @@ final class TransactionRunner
                     $rollbackCallback,
                 );
 
-                throw new TransactionProcessingException($this->uuid, $stepConfiguration, $exception);
+                throw new TransactionProcessingException($this->uuid, $stepConfiguration->class, $exception);
             }
 
             $this->stack->push($step);
             if ($isSuccess === false) {
-                $exception = new TransactionProcessingException($this->uuid, $stepConfiguration);
+                $exception = new TransactionProcessingException($this->uuid, $stepConfiguration->class);
                 $this->rollback(
                     $exception,
                     $this->state->stack(),
