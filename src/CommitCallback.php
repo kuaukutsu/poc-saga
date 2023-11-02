@@ -10,14 +10,14 @@ use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
 final class CommitCallback implements TransactionCallbackInterface
 {
     /**
-     * @param Closure(TransactionStepStateCollection, string): void $callback
+     * @param Closure(string, TransactionStepStateCollection): void $callback
      */
     public function __construct(private readonly Closure $callback)
     {
     }
 
-    public function handler(TransactionStepStateCollection $stack, string $uuid): void
+    public function handler(string $uuid, TransactionStepStateCollection $stack): void
     {
-        call_user_func($this->callback, $stack, $uuid);
+        call_user_func($this->callback, $uuid, $stack);
     }
 }
