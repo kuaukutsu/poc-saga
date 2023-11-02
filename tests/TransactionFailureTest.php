@@ -35,7 +35,7 @@ final class TransactionFailureTest extends TestCase
         $this->runner->run(
             new TestTransactionFailure(),
             new RollbackCallback(
-                static function (TransactionStepStateCollection $storage): void {
+                static function (string $uuid, TransactionStepStateCollection $storage): void {
                     // в стеке первые два шага, в том числе Failure
                     self::assertCount(2, $storage);
                 }
@@ -50,7 +50,7 @@ final class TransactionFailureTest extends TestCase
         $this->runner->run(
             new TestTransactionException(),
             new RollbackCallback(
-                static function (TransactionStepStateCollection $storage): void {
+                static function (string $uuid, TransactionStepStateCollection $storage): void {
                     // в стеке только первый шаг, так как второй Exception
                     self::assertCount(1, $storage);
                 }

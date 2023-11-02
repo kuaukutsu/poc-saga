@@ -33,7 +33,7 @@ final class TransactionCallbackTest extends TestCase
         $transaction = $this->runner->run(
             new TestTransaction(),
             new CommitCallback(
-                static function (TransactionStepStateCollection $storage): void {
+                static function (string $uuid, TransactionStepStateCollection $storage): void {
                     self::assertNotEmpty($storage->get(OneStep::class));
 
                     $list = $storage->toArrayRecursive();

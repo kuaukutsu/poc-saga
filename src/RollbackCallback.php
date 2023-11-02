@@ -11,14 +11,14 @@ use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
 final class RollbackCallback implements TransactionCallbackInterface
 {
     /**
-     * @param Closure(TransactionStepStateCollection, Throwable, string): void $callback
+     * @param Closure(string, TransactionStepStateCollection, Throwable): void $callback
      */
     public function __construct(private readonly Closure $callback)
     {
     }
 
-    public function handler(TransactionStepStateCollection $stack, Throwable $exception, string $uuid): void
+    public function handler(string $uuid, TransactionStepStateCollection $stack, Throwable $exception): void
     {
-        call_user_func($this->callback, $stack, $exception, $uuid);
+        call_user_func($this->callback, $uuid, $stack, $exception);
     }
 }

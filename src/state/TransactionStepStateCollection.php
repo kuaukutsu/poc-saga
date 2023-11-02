@@ -21,6 +21,13 @@ final class TransactionStepStateCollection extends Collection
         return $this->get($stepName)?->data;
     }
 
+    public function withoutStep(string $stepName): self
+    {
+        return $this->filter(
+            static fn(TransactionStepState $state): bool => $state->step !== $stepName
+        );
+    }
+
     public function toArrayRecursive(): array
     {
         $collection = [];
