@@ -12,7 +12,6 @@ use Psr\Container\ContainerExceptionInterface;
 use kuaukutsu\poc\saga\exception\TransactionFactoryException;
 use kuaukutsu\poc\saga\exception\TransactionProcessingException;
 use kuaukutsu\poc\saga\state\TransactionState;
-use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
 use kuaukutsu\poc\saga\step\TransactionStepFactory;
 use kuaukutsu\poc\saga\step\TransactionStepInterface;
 
@@ -44,17 +43,19 @@ final class TransactionRunner
                 $step->bind($this->uuid, $this->state);
                 $isSuccess = $step->commit();
             } catch (Throwable $exception) {
-                throw $this->rollbackByException($exception, $step, $rollbackCallback);
+                $this->rollbackByException($exception, $step, $rollbackCallback);
+                throw new TransactionProcessingException($this->uuid, $step::class, $exception);
             }
 
             if ($isSuccess === false) {
-                throw $this->rollbackByResult($step, $rollbackCallback);
+                $this->rollbackByResult($step, $rollbackCallback);
+                throw new TransactionProcessingException($this->uuid, $step::class);
             }
 
             $this->stack->push($step);
         }
 
-        return $this->commit($this->state->stack(), $commitCallback);
+        return $this->commit($commitCallback);
     }
 
     /**
@@ -104,39 +105,56 @@ final class TransactionRunner
         Throwable $exception,
         TransactionStepInterface $step,
         ?RollbackCallback $callback,
-    ): TransactionProcessingException {
+    ): void {
         $this->stack->rollback();
 
-        $stateCopy = $this->state->stack()->withoutStep($step::class);
+        if ($callback !== null) {
+            try {
+                $callback->handler(
+                    $this->uuid,
+                    $this->state->stack()->withoutStep($step::class),
+                    $exception,
+                );
+            } catch (Throwable) {
+            }
+        }
+
         $this->state->clean();
-
-        $callback?->handler($this->uuid, $stateCopy, $exception);
-
-        return new TransactionProcessingException($this->uuid, $step::class, $exception);
     }
 
     private function rollbackByResult(
         TransactionStepInterface $step,
         ?RollbackCallback $callback,
-    ): TransactionProcessingException {
+    ): void {
         $step->rollback();
         $this->stack->rollback();
 
-        $stateCopy = $this->state->stack();
+        if ($callback !== null) {
+            try {
+                $callback->handler(
+                    $this->uuid,
+                    $this->state->stack(),
+                    new TransactionProcessingException($this->uuid, $step::class),
+                );
+            } catch (Throwable) {
+            }
+        }
+
         $this->state->clean();
-
-        $exception = new TransactionProcessingException($this->uuid, $step::class);
-        $callback?->handler($this->uuid, $stateCopy, $exception);
-
-        return $exception;
     }
 
     private function commit(
-        TransactionStepStateCollection $stackState,
         ?CommitCallback $callback,
     ): TransactionResult {
-        $callback?->handler($this->uuid, $stackState);
+        $result = new TransactionResult($this->uuid, $this->state->stack());
 
-        return new TransactionResult($this->uuid, $stackState);
+        if ($callback !== null) {
+            try {
+                $callback->handler($this->uuid, $result);
+            } catch (Throwable) {
+            }
+        }
+
+        return $result;
     }
 }
