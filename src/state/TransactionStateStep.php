@@ -9,7 +9,7 @@ use kuaukutsu\poc\saga\step\TransactionStepInterface;
 /**
  * @psalm-immutable
  */
-final class TransactionStepState
+final class TransactionStateStep
 {
     /**
      * @param class-string<TransactionStepInterface> $step

@@ -84,16 +84,16 @@ final class TransactionRunner
 
     /**
      * @param TransactionCallbackInterface[] $listCallback
-     * @return array{CommitCallback|null, RollbackCallback|null}
+     * @return array{TransactionCommitCallback|null, TransactionRollbackCallback|null}
      */
     private function prepareCallback(array $listCallback): array
     {
         $commitCallback = null;
         $rollbackCallback = null;
         foreach ($listCallback as $callback) {
-            if ($callback instanceof RollbackCallback) {
+            if ($callback instanceof TransactionRollbackCallback) {
                 $rollbackCallback = $callback;
-            } elseif ($callback instanceof CommitCallback) {
+            } elseif ($callback instanceof TransactionCommitCallback) {
                 $commitCallback = $callback;
             }
         }
@@ -104,7 +104,7 @@ final class TransactionRunner
     private function rollbackByException(
         Throwable $exception,
         TransactionStepInterface $step,
-        ?RollbackCallback $callback,
+        ?TransactionRollbackCallback $callback,
     ): void {
         $this->stack->rollback();
 
@@ -124,7 +124,7 @@ final class TransactionRunner
 
     private function rollbackByResult(
         TransactionStepInterface $step,
-        ?RollbackCallback $callback,
+        ?TransactionRollbackCallback $callback,
     ): void {
         $step->rollback();
         $this->stack->rollback();
@@ -144,7 +144,7 @@ final class TransactionRunner
     }
 
     private function commit(
-        ?CommitCallback $callback,
+        ?TransactionCommitCallback $callback,
     ): TransactionResult {
         $result = new TransactionResult($this->uuid, $this->state->stack());
 

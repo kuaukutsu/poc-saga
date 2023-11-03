@@ -8,8 +8,8 @@ use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
 use kuaukutsu\poc\saga\exception\TransactionProcessingException;
-use kuaukutsu\poc\saga\RollbackCallback;
-use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
+use kuaukutsu\poc\saga\TransactionRollbackCallback;
+use kuaukutsu\poc\saga\state\TransactionStateStepCollection;
 use kuaukutsu\poc\saga\tests\stub\TestTransactionException;
 use kuaukutsu\poc\saga\tests\stub\TestTransactionFailure;
 use kuaukutsu\poc\saga\TransactionRunner;
@@ -34,8 +34,8 @@ final class TransactionFailureTest extends TestCase
 
         $this->runner->run(
             new TestTransactionFailure(),
-            new RollbackCallback(
-                static function (string $uuid, TransactionStepStateCollection $storage): void {
+            new TransactionRollbackCallback(
+                static function (string $uuid, TransactionStateStepCollection $storage): void {
                     // в стеке первые два шага, в том числе Failure
                     self::assertCount(2, $storage);
                 }
@@ -49,8 +49,8 @@ final class TransactionFailureTest extends TestCase
 
         $this->runner->run(
             new TestTransactionException(),
-            new RollbackCallback(
-                static function (string $uuid, TransactionStepStateCollection $storage): void {
+            new TransactionRollbackCallback(
+                static function (string $uuid, TransactionStateStepCollection $storage): void {
                     // в стеке только первый шаг, так как второй Exception
                     self::assertCount(1, $storage);
                 }

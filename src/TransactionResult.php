@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga;
 
-use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
+use kuaukutsu\poc\saga\state\TransactionStateStepCollection;
 
 /**
  * @psalm-immutable
@@ -13,7 +13,7 @@ final class TransactionResult
 {
     public function __construct(
         public readonly string $uuid,
-        public readonly TransactionStepStateCollection $state,
+        public readonly TransactionStateStepCollection $state,
     ) {
     }
 }

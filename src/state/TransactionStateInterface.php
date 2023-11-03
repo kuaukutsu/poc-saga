@@ -24,7 +24,7 @@ interface TransactionStateInterface
      * Каждый шаг может сохранять своё значение от выполнения действия.
      * В стеке содержится вся информация по выполненным шагам.
      */
-    public function stack(): TransactionStepStateCollection;
+    public function stack(): TransactionStateStepCollection;
 
     public function clean(): void;
 }

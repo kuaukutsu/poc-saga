@@ -116,12 +116,12 @@ $transaction = new TestTransaction();
 /** @var TransactionRunner $transactionRunner */
 $transactionRunner->run(
     $transaction,
-    new CommitCallback(
+    new TransactionCommitCallback(
         static function (TransactionStateCollection $data) {
             ...
         }
     ),
-    new RollbackCallback(
+    new TransactionRollbackCallback(
         static function (TransactionStateCollection $data, Exception $exception) {
             ...
         }

@@ -6,7 +6,7 @@ namespace kuaukutsu\poc\saga\state;
 
 /**
  * Для обобщения данных которые являются результатом работы Step.
- * Только простые структуры: DtoInterface, Collection
+ * Только простые структуры: scalar, DTO, Collection
  */
 interface TransactionDataInterface
 {

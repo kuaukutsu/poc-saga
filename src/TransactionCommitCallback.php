@@ -6,7 +6,7 @@ namespace kuaukutsu\poc\saga;
 
 use Closure;
 
-final class CommitCallback implements TransactionCallbackInterface
+final class TransactionCommitCallback implements TransactionCallbackInterface
 {
     /**
      * @param Closure(string, TransactionResult): void $callback

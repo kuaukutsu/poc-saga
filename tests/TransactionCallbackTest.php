@@ -7,7 +7,7 @@ namespace kuaukutsu\poc\saga\tests;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
-use kuaukutsu\poc\saga\CommitCallback;
+use kuaukutsu\poc\saga\TransactionCommitCallback;
 use kuaukutsu\poc\saga\tests\stub\OneStep;
 use kuaukutsu\poc\saga\tests\stub\TestTransaction;
 use kuaukutsu\poc\saga\tests\stub\TwoStep;
@@ -32,7 +32,7 @@ final class TransactionCallbackTest extends TestCase
     {
         $transaction = $this->runner->run(
             new TestTransaction(),
-            new CommitCallback(
+            new TransactionCommitCallback(
                 static function (string $uuid, TransactionResult $result): void {
                     self::assertNotEmpty($result->state->get(OneStep::class));
 
