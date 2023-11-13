@@ -42,19 +42,19 @@ final class TestTransaction implements TransactionInterface
     {
         return new StepCollection(
             new Step(
-                OneTransactionStep::class,
+                OneStep::class,
                 [
                     'name' => 'one',
                 ]
             ),
             new Step(
-                TwoTransactionStep::class,
+                TwoStep::class,
                 [
                     'name' => 'two',
                 ]
             ),
             new Step(
-                SaveTransactionStep::class,
+                SaveStep::class,
                 [
                     'name' => 'save',
                 ]
