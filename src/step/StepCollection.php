@@ -7,12 +7,12 @@ namespace kuaukutsu\poc\saga\step;
 use kuaukutsu\ds\collection\Collection;
 
 /**
- * @extends Collection<TransactionStep>
+ * @extends Collection<Step>
  */
-final class TransactionStepCollection extends Collection
+final class StepCollection extends Collection
 {
     public function getType(): string
     {
-        return TransactionStep::class;
+        return Step::class;
     }
 }

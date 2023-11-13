@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga\state;
+namespace kuaukutsu\poc\saga;
 
 /**
  * Для обобщения данных которые являются результатом работы Step.

@@ -7,10 +7,10 @@ namespace kuaukutsu\poc\saga\step;
 /**
  * @psalm-immutable
  */
-final class TransactionStep
+final class Step
 {
     /**
-     * @param class-string<TransactionStepInterface> $class
+     * @param class-string<StepInterface> $class
      * @param array<string, string|int|string[]|int[]|object> $params Конфигурация объекта
      */
     public function __construct(

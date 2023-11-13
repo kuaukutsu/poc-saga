@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga;
+namespace kuaukutsu\poc\saga\tools;
 
 use Closure;
+use kuaukutsu\poc\saga\TransactionCallbackInterface;
+use kuaukutsu\poc\saga\TransactionResult;
 
 final class TransactionCommitCallback implements TransactionCallbackInterface
 {

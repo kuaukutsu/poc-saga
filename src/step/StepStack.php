@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga;
+namespace kuaukutsu\poc\saga\step;
 
-use SplStack;
 use Exception;
-use kuaukutsu\poc\saga\step\TransactionStepInterface;
+use SplStack;
 
-final class TransactionStack
+final class StepStack
 {
     /**
-     * @var SplStack<TransactionStepInterface>
+     * @var SplStack<StepInterface>
      */
     private readonly SplStack $stack;
 
@@ -20,7 +19,7 @@ final class TransactionStack
         $this->stack = new SplStack();
     }
 
-    public function push(TransactionStepInterface $step): void
+    public function push(StepInterface $step): void
     {
         $this->stack->push($step);
     }

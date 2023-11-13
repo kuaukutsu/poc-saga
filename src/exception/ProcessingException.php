@@ -7,7 +7,7 @@ namespace kuaukutsu\poc\saga\exception;
 use Throwable;
 use RuntimeException;
 
-final class TransactionProcessingException extends RuntimeException
+final class ProcessingException extends RuntimeException
 {
     public function __construct(
         string $uuid,

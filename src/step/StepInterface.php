@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\step;
 
-use kuaukutsu\poc\saga\state\TransactionStateInterface;
+use kuaukutsu\poc\saga\state\StateInterface;
 
-interface TransactionStepInterface
+interface StepInterface
 {
     /**
      * Полезная работа шага транзакции.
@@ -23,5 +23,5 @@ interface TransactionStepInterface
     /**
      * Каждый Шаг должен быть связан с Состоянием Транзакции.
      */
-    public function bind(string $uuid, TransactionStateInterface $state): void;
+    public function bind(string $uuid, StateInterface $state): void;
 }

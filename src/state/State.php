@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\state;
 
-use kuaukutsu\poc\saga\exception\TransactionStateNotFoundException;
-use kuaukutsu\poc\saga\step\TransactionStepInterface;
+use kuaukutsu\poc\saga\exception\NotFoundException;
+use kuaukutsu\poc\saga\step\StepInterface;
+use kuaukutsu\poc\saga\TransactionDataInterface;
 
-final class TransactionState implements TransactionStateInterface
+final class State implements StateInterface
 {
     /**
      * При желании можно заменить на persistent storage.
-     * @var array<class-string<TransactionStepInterface>, TransactionStateStep>
+     * @var array<class-string<StepInterface>, StepState>
      */
     private array $state = [];
 
     public function set(string $stepName, TransactionDataInterface $data): void
     {
-        $this->state[$stepName] = new TransactionStateStep($stepName, $data);
+        $this->state[$stepName] = new StepState($stepName, $data);
     }
 
     public function get(string $stepName): TransactionDataInterface
@@ -26,12 +27,12 @@ final class TransactionState implements TransactionStateInterface
             return $this->state[$stepName]->data;
         }
 
-        throw new TransactionStateNotFoundException($stepName);
+        throw new NotFoundException($stepName);
     }
 
-    public function stack(): TransactionStateStepCollection
+    public function stack(): StepStateCollection
     {
-        return new TransactionStateStepCollection(...$this->state);
+        return new StepStateCollection(...$this->state);
     }
 
     public function clean(): void

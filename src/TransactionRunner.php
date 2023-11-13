@@ -4,33 +4,36 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga;
 
-use SplQueue;
-use SplDoublyLinkedList;
 use Throwable;
-use Ramsey\Uuid\UuidFactory;
+use SplDoublyLinkedList;
+use SplQueue;
 use Psr\Container\ContainerExceptionInterface;
-use kuaukutsu\poc\saga\exception\TransactionFactoryException;
-use kuaukutsu\poc\saga\exception\TransactionProcessingException;
-use kuaukutsu\poc\saga\state\TransactionState;
-use kuaukutsu\poc\saga\step\TransactionStepFactory;
-use kuaukutsu\poc\saga\step\TransactionStepInterface;
+use Ramsey\Uuid\UuidFactory;
+use kuaukutsu\poc\saga\exception\ProcessingException;
+use kuaukutsu\poc\saga\exception\StepFactoryException;
+use kuaukutsu\poc\saga\state\State;
+use kuaukutsu\poc\saga\step\StepStack;
+use kuaukutsu\poc\saga\step\StepFactory;
+use kuaukutsu\poc\saga\step\StepInterface;
+use kuaukutsu\poc\saga\tools\TransactionCommitCallback;
+use kuaukutsu\poc\saga\tools\TransactionRollbackCallback;
 
 final class TransactionRunner
 {
     private readonly string $uuid;
 
     public function __construct(
-        private readonly TransactionStepFactory $stepFactory,
-        private readonly TransactionState $state,
-        private readonly TransactionStack $stack,
+        private readonly StepFactory $stepFactory,
+        private readonly State $state,
+        private readonly StepStack $stack,
         UuidFactory $uuidFactory,
     ) {
         $this->uuid = $uuidFactory->uuid7()->toString();
     }
 
     /**
-     * @throws TransactionFactoryException Если транзакция потерпела фиаско.
-     * @throws TransactionProcessingException Если транзакция потерпела фиаско.
+     * @throws StepFactoryException Если транзакция потерпела фиаско.
+     * @throws ProcessingException Если транзакция потерпела фиаско.
      */
     public function run(
         TransactionInterface $transaction,
@@ -44,12 +47,12 @@ final class TransactionRunner
                 $isSuccess = $step->commit();
             } catch (Throwable $exception) {
                 $this->rollbackByException($exception, $step, $rollbackCallback);
-                throw new TransactionProcessingException($this->uuid, $step::class, $exception);
+                throw new ProcessingException($this->uuid, $step::class, $exception);
             }
 
             if ($isSuccess === false) {
                 $this->rollbackByResult($step, $rollbackCallback);
-                throw new TransactionProcessingException($this->uuid, $step::class);
+                throw new ProcessingException($this->uuid, $step::class);
             }
 
             $this->stack->push($step);
@@ -59,13 +62,13 @@ final class TransactionRunner
     }
 
     /**
-     * @return iterable<TransactionStepInterface>
-     * @throws TransactionFactoryException
+     * @return iterable<StepInterface>
+     * @throws StepFactoryException
      */
     private function factorySteps(TransactionInterface $transaction): iterable
     {
         /**
-         * @var SplQueue<TransactionStepInterface> $queue
+         * @var SplQueue<StepInterface> $queue
          */
         $queue = new SplQueue();
         $queue->setIteratorMode(SplDoublyLinkedList::IT_MODE_DELETE);
@@ -75,7 +78,7 @@ final class TransactionRunner
                     $this->stepFactory->create($stepConfiguration)
                 );
             } catch (ContainerExceptionInterface $exception) {
-                throw new TransactionFactoryException($this->uuid, $stepConfiguration->class, $exception);
+                throw new StepFactoryException($this->uuid, $stepConfiguration->class, $exception);
             }
         }
 
@@ -103,7 +106,7 @@ final class TransactionRunner
 
     private function rollbackByException(
         Throwable $exception,
-        TransactionStepInterface $step,
+        StepInterface $step,
         ?TransactionRollbackCallback $callback,
     ): void {
         $this->stack->rollback();
@@ -123,7 +126,7 @@ final class TransactionRunner
     }
 
     private function rollbackByResult(
-        TransactionStepInterface $step,
+        StepInterface $step,
         ?TransactionRollbackCallback $callback,
     ): void {
         $step->rollback();
@@ -134,7 +137,7 @@ final class TransactionRunner
                 $callback->handler(
                     $this->uuid,
                     $this->state->stack(),
-                    new TransactionProcessingException($this->uuid, $step::class),
+                    new ProcessingException($this->uuid, $step::class),
                 );
             } catch (Throwable) {
             }

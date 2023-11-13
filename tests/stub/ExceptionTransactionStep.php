@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\tests\stub;
 
-use kuaukutsu\poc\saga\step\TransactionStepBase;
+use kuaukutsu\poc\saga\TransactionStepBase;
+use RuntimeException;
 
-final class OneStep extends TransactionStepBase
+final class ExceptionTransactionStep extends TransactionStepBase
 {
     public function __construct(
         public readonly string $name,
@@ -24,7 +25,9 @@ final class OneStep extends TransactionStepBase
             )
         );
 
-        return true;
+        throw new RuntimeException(
+            'RuntimeException from FailureStep.'
+        );
     }
 
     public function rollback(): bool
