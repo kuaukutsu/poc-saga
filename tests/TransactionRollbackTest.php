@@ -7,7 +7,7 @@ namespace kuaukutsu\poc\saga\tests;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
-use kuaukutsu\poc\saga\exception\TransactionProcessingException;
+use kuaukutsu\poc\saga\exception\ProcessingException;
 use kuaukutsu\poc\saga\tests\stub\Storage;
 use kuaukutsu\poc\saga\tests\stub\TestTransaction;
 use kuaukutsu\poc\saga\tests\stub\TestTransactionRollback;
@@ -45,7 +45,7 @@ final class TransactionRollbackTest extends TestCase
             $this->runner->run(
                 new TestTransactionRollback('rollback')
             );
-        } catch (TransactionProcessingException) {
+        } catch (ProcessingException) {
         }
 
         self::assertEmpty(Storage::get('rollback'));

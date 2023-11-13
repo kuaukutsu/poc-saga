@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga\step;
+namespace kuaukutsu\poc\saga;
 
-use kuaukutsu\poc\saga\exception\TransactionStateNotFoundException;
-use kuaukutsu\poc\saga\state\TransactionDataInterface;
-use kuaukutsu\poc\saga\state\TransactionStateInterface;
+use kuaukutsu\poc\saga\exception\NotFoundException;
+use kuaukutsu\poc\saga\state\StateInterface;
+use kuaukutsu\poc\saga\step\StepInterface;
 
-abstract class TransactionStepBase implements TransactionStepInterface
+abstract class TransactionStepBase implements StepInterface
 {
     /**
      * @psalm-immutable
@@ -18,9 +18,9 @@ abstract class TransactionStepBase implements TransactionStepInterface
     /**
      * @psalm-immutable
      */
-    private TransactionStateInterface $state;
+    private StateInterface $state;
 
-    final public function bind(string $uuid, TransactionStateInterface $state): void
+    final public function bind(string $uuid, StateInterface $state): void
     {
         $this->uuid = $uuid;
         $this->state = $state;
@@ -37,8 +37,8 @@ abstract class TransactionStepBase implements TransactionStepInterface
     }
 
     /**
-     * @param class-string<TransactionStepInterface> $stepName
-     * @throws TransactionStateNotFoundException
+     * @param class-string<StepInterface> $stepName
+     * @throws NotFoundException
      */
     final protected function get(string $stepName): TransactionDataInterface
     {

@@ -7,11 +7,11 @@ namespace kuaukutsu\poc\saga\tests;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
-use kuaukutsu\poc\saga\exception\TransactionProcessingException;
-use kuaukutsu\poc\saga\RollbackCallback;
-use kuaukutsu\poc\saga\state\TransactionStepStateCollection;
+use kuaukutsu\poc\saga\exception\ProcessingException;
+use kuaukutsu\poc\saga\state\StepStateCollection;
 use kuaukutsu\poc\saga\tests\stub\TestTransactionException;
 use kuaukutsu\poc\saga\tests\stub\TestTransactionFailure;
+use kuaukutsu\poc\saga\tools\TransactionRollbackCallback;
 use kuaukutsu\poc\saga\TransactionRunner;
 use PHPUnit\Framework\TestCase;
 
@@ -30,12 +30,12 @@ final class TransactionFailureTest extends TestCase
 
     public function testFailure(): void
     {
-        $this->expectException(TransactionProcessingException::class);
+        $this->expectException(ProcessingException::class);
 
         $this->runner->run(
             new TestTransactionFailure(),
-            new RollbackCallback(
-                static function (string $uuid, TransactionStepStateCollection $storage): void {
+            new TransactionRollbackCallback(
+                static function (string $uuid, StepStateCollection $storage): void {
                     // в стеке первые два шага, в том числе Failure
                     self::assertCount(2, $storage);
                 }
@@ -45,12 +45,12 @@ final class TransactionFailureTest extends TestCase
 
     public function testException(): void
     {
-        $this->expectException(TransactionProcessingException::class);
+        $this->expectException(ProcessingException::class);
 
         $this->runner->run(
             new TestTransactionException(),
-            new RollbackCallback(
-                static function (string $uuid, TransactionStepStateCollection $storage): void {
+            new TransactionRollbackCallback(
+                static function (string $uuid, StepStateCollection $storage): void {
                     // в стеке только первый шаг, так как второй Exception
                     self::assertCount(1, $storage);
                 }

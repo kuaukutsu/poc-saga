@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace kuaukutsu\poc\saga\state;
+namespace kuaukutsu\poc\saga;
 
 /**
  * Для обобщения данных которые являются результатом работы Step.
- * Только простые структуры: DtoInterface, Collection
+ * Только простые структуры: scalar, DTO, Collection
  */
 interface TransactionDataInterface
 {

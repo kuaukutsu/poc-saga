@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\tests\stub;
 
-use kuaukutsu\poc\saga\step\TransactionStepBase;
+use kuaukutsu\poc\saga\TransactionStepBase;
 
-final class FailureStep extends TransactionStepBase
+final class TwoTransactionStep extends TransactionStepBase
 {
     public function __construct(
         public readonly string $name,
@@ -15,8 +15,6 @@ final class FailureStep extends TransactionStepBase
 
     public function commit(): bool
     {
-        Storage::set($this->name, 'test-failure');
-
         $this->save(
             TestTransactionData::hydrate(
                 [
@@ -26,13 +24,11 @@ final class FailureStep extends TransactionStepBase
             )
         );
 
-        return false;
+        return true;
     }
 
     public function rollback(): bool
     {
-        Storage::delete($this->name);
-
         return true;
     }
 }

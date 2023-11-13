@@ -10,13 +10,13 @@ use DI\NotFoundException;
 
 use function DI\autowire;
 
-final class TransactionStepFactory
+final class StepFactory
 {
     /**
      * @throws DependencyException
      * @throws NotFoundException
      */
-    public function create(TransactionStep $stepConfiguration): TransactionStepInterface
+    public function create(Step $stepConfiguration): StepInterface
     {
         $definition = autowire($stepConfiguration->class);
         foreach ($stepConfiguration->params as $key => $value) {
@@ -25,13 +25,13 @@ final class TransactionStepFactory
 
         $container = new Container(
             [
-                TransactionStepInterface::class => $definition,
+                StepInterface::class => $definition,
             ]
         );
 
         /**
-         * @var TransactionStepInterface
+         * @var StepInterface
          */
-        return $container->get(TransactionStepInterface::class);
+        return $container->get(StepInterface::class);
     }
 }

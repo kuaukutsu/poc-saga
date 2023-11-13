@@ -38,19 +38,25 @@
 ```php
 final class TestTransaction implements TransactionInterface
 {
-    public function steps(): TransactionStepCollection
+    public function steps(): StepCollection
     {
-        return new TransactionStepCollection(
-            new TransactionStep(
-                OneStep::class,
+        return new StepCollection(
+            new Step(
+                OneTransactionStep::class,
                 [
                     'name' => 'one',
                 ]
             ),
-            new TransactionStep(
-                TwoStep::class,
+            new Step(
+                TwoTransactionStep::class,
                 [
                     'name' => 'two',
+                ]
+            ),
+            new Step(
+                SaveTransactionStep::class,
+                [
+                    'name' => 'save',
                 ]
             ),
         );
@@ -65,6 +71,7 @@ final class OneStep extends TransactionStepBase
 {
     public function __construct(
         public readonly string $name,
+        private readonly string $dateFormat = 'c',
     ) {
     }
 
@@ -76,7 +83,7 @@ final class OneStep extends TransactionStepBase
             TestTransactionData::hydrate(
                 [
                     'name' => $this->name,
-                    'datetime' => gmdate('c'),
+                    'datetime' => gmdate($this->dateFormat),
                 ]
             )
         );
@@ -116,13 +123,13 @@ $transaction = new TestTransaction();
 /** @var TransactionRunner $transactionRunner */
 $transactionRunner->run(
     $transaction,
-    new CommitCallback(
-        static function (TransactionStateCollection $data) {
+    new TransactionCommitCallback(
+        static function (StepStateCollection $data) {
             ...
         }
     ),
-    new RollbackCallback(
-        static function (TransactionStateCollection $data, Exception $exception) {
+    new TransactionRollbackCallback(
+        static function (StepStateCollection $data, Exception $exception) {
             ...
         }
     ),

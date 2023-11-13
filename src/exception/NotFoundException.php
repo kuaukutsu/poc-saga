@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\exception;
 
-use RuntimeException;
+use LogicException;
 
-final class TransactionStateNotFoundException extends RuntimeException
+final class NotFoundException extends LogicException
 {
     public function __construct(string $stepName, int $code = 0)
     {

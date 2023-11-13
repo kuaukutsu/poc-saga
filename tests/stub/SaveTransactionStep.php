@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\saga\tests\stub;
 
-use kuaukutsu\poc\saga\step\TransactionStepBase;
+use kuaukutsu\poc\saga\TransactionStepBase;
 
-final class SaveStep extends TransactionStepBase
+final class SaveTransactionStep extends TransactionStepBase
 {
     public function __construct(
         private readonly string $name,

@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace kuaukutsu\poc\saga\state;
 
 use kuaukutsu\ds\collection\Collection;
+use kuaukutsu\poc\saga\TransactionDataInterface;
 
 /**
- * @extends Collection<TransactionStepState>
+ * @extends Collection<StepState>
  */
-final class TransactionStepStateCollection extends Collection
+final class StepStateCollection extends Collection
 {
     public function getType(): string
     {
-        return TransactionStepState::class;
+        return StepState::class;
     }
 
     public function getData(string $stepName): ?TransactionDataInterface
@@ -24,7 +25,7 @@ final class TransactionStepStateCollection extends Collection
     public function withoutStep(string $stepName): self
     {
         return $this->filter(
-            static fn(TransactionStepState $state): bool => $state->step !== $stepName
+            static fn(StepState $state): bool => $state->step !== $stepName
         );
     }
 
@@ -39,7 +40,7 @@ final class TransactionStepStateCollection extends Collection
     }
 
     /**
-     * @param TransactionStepState $item
+     * @param StepState $item
      */
     protected function indexBy($item): string
     {
