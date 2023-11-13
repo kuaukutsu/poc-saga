@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace kuaukutsu\poc\saga;
 
 use Throwable;
-use SplDoublyLinkedList;
-use SplQueue;
-use Psr\Container\ContainerExceptionInterface;
 use Ramsey\Uuid\UuidFactory;
 use kuaukutsu\poc\saga\exception\ProcessingException;
 use kuaukutsu\poc\saga\exception\StepFactoryException;
@@ -20,12 +17,15 @@ use kuaukutsu\poc\saga\tools\TransactionRollbackCallback;
 
 final class TransactionRunner
 {
+    /**
+     * @var non-empty-string
+     */
     private readonly string $uuid;
 
     public function __construct(
-        private readonly StepFactory $stepFactory,
         private readonly State $state,
         private readonly StepStack $stack,
+        private readonly StepFactory $stepFactory,
         UuidFactory $uuidFactory,
     ) {
         $this->uuid = $uuidFactory->uuid7()->toString();
@@ -41,7 +41,8 @@ final class TransactionRunner
     ): TransactionResult {
         [$commitCallback, $rollbackCallback] = $this->prepareCallback($listCallback);
 
-        foreach ($this->factorySteps($transaction) as $step) {
+        $stepQueue = $this->stepFactory->createQueue($this->uuid, $transaction);
+        foreach ($stepQueue as $step) {
             try {
                 $step->bind($this->uuid, $this->state);
                 $isSuccess = $step->commit();
@@ -59,30 +60,6 @@ final class TransactionRunner
         }
 
         return $this->commit($commitCallback);
-    }
-
-    /**
-     * @return iterable<StepInterface>
-     * @throws StepFactoryException
-     */
-    private function factorySteps(TransactionInterface $transaction): iterable
-    {
-        /**
-         * @var SplQueue<StepInterface> $queue
-         */
-        $queue = new SplQueue();
-        $queue->setIteratorMode(SplDoublyLinkedList::IT_MODE_DELETE);
-        foreach ($transaction->steps() as $stepConfiguration) {
-            try {
-                $queue->enqueue(
-                    $this->stepFactory->create($stepConfiguration)
-                );
-            } catch (ContainerExceptionInterface $exception) {
-                throw new StepFactoryException($this->uuid, $stepConfiguration->class, $exception);
-            }
-        }
-
-        return $queue;
     }
 
     /**
