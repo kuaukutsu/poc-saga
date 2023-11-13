@@ -13,31 +13,25 @@ use Psr\Container\ContainerExceptionInterface;
 use kuaukutsu\poc\saga\exception\StepFactoryException;
 use kuaukutsu\poc\saga\TransactionInterface;
 
-use function DI\autowire;
-
 final class StepFactory
 {
+    public function __construct(private readonly Container $container)
+    {
+    }
+
     /**
      * @throws DependencyException
      * @throws NotFoundException
      */
     public function create(Step $stepConfiguration): StepInterface
     {
-        $definition = autowire($stepConfiguration->class);
-        foreach ($stepConfiguration->params as $key => $value) {
-            $definition->constructorParameter($key, $value);
-        }
-
-        $container = new Container(
-            [
-                StepInterface::class => $definition,
-            ]
-        );
-
         /**
          * @var StepInterface
          */
-        return $container->get(StepInterface::class);
+        return $this->container->make(
+            $stepConfiguration->class,
+            $stepConfiguration->params,
+        );
     }
 
     /**
