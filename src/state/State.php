@@ -27,7 +27,7 @@ final class State implements StateInterface
             return $this->state[$stepName]->data;
         }
 
-        throw new NotFoundException($stepName);
+        throw new NotFoundException("[$stepName] Step not found.");
     }
 
     public function stack(): StepStateCollection

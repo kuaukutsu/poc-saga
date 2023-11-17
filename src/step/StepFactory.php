@@ -7,9 +7,9 @@ namespace kuaukutsu\poc\saga\step;
 use SplDoublyLinkedList;
 use SplQueue;
 use DI\Container;
-use DI\DependencyException;
-use DI\NotFoundException;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
+use kuaukutsu\poc\saga\exception\NotFoundException;
 use kuaukutsu\poc\saga\exception\StepFactoryException;
 use kuaukutsu\poc\saga\TransactionInterface;
 
@@ -20,8 +20,8 @@ final class StepFactory
     }
 
     /**
-     * @throws DependencyException
-     * @throws NotFoundException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function create(Step $stepConfiguration): StepInterface
     {
@@ -37,6 +37,7 @@ final class StepFactory
     /**
      * @return iterable<StepInterface>
      * @throws StepFactoryException
+     * @throws NotFoundException
      */
     public function createQueue(string $uuid, TransactionInterface $transaction): iterable
     {
@@ -53,6 +54,12 @@ final class StepFactory
             } catch (ContainerExceptionInterface $exception) {
                 throw new StepFactoryException($uuid, $stepConfiguration->class, $exception);
             }
+        }
+
+        if ($queue->isEmpty()) {
+            throw new NotFoundException(
+                "[$uuid] Transaction step configuration empty."
+            );
         }
 
         return $queue;

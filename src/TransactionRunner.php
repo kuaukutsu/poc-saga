@@ -6,6 +6,7 @@ namespace kuaukutsu\poc\saga;
 
 use Throwable;
 use Ramsey\Uuid\UuidFactory;
+use kuaukutsu\poc\saga\exception\NotFoundException;
 use kuaukutsu\poc\saga\exception\ProcessingException;
 use kuaukutsu\poc\saga\exception\StepFactoryException;
 use kuaukutsu\poc\saga\state\State;
@@ -32,6 +33,7 @@ final class TransactionRunner
     }
 
     /**
+     * @throws NotFoundException Если нет сконфигурированных шагов.
      * @throws StepFactoryException Если транзакция потерпела фиаско.
      * @throws ProcessingException Если транзакция потерпела фиаско.
      */
