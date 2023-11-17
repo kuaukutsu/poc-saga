@@ -8,8 +8,8 @@ use LogicException;
 
 final class NotFoundException extends LogicException
 {
-    public function __construct(string $stepName, int $code = 0)
+    public function __construct(string $message)
     {
-        parent::__construct("[$stepName] state not found.", $code);
+        parent::__construct($message);
     }
 }

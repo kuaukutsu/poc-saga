@@ -18,8 +18,8 @@ profile:
 #    paths:
 #      - <path/where/not/run/inspection>
 
-php:
-  version: 8.1 #(Applied in CI/CD pipeline)
+#php:
+#  version: 8.1 #(Applied in CI/CD pipeline)
 
 #Execute shell command before Qodana execution (Applied in CI/CD pipeline)
 #bootstrap: sh ./prepare-qodana.sh
@@ -34,3 +34,6 @@ exclude:
   - name: All
     paths:
       - composer.lock
+      - rector.php
+include:
+  - name: CheckDependencyLicenses
