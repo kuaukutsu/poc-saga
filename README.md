@@ -2,6 +2,7 @@
 
 - https://microservices.io/patterns/data/saga.html
 - https://learn.microsoft.com/ru-ru/azure/architecture/reference-architectures/saga/saga
+- https://www.youtube.com/live/tLw8lJ-Eijk?si=6YIDa3lpvBYuGtFW
 
 
 ## Проблема
