@@ -12,12 +12,22 @@ use kuaukutsu\poc\saga\TransactionDataInterface;
  */
 final class StepStateCollection extends Collection
 {
+    use StepStateModel;
+
     public function getType(): string
     {
         return StepState::class;
     }
 
-    public function getData(string $stepName): ?TransactionDataInterface
+    /**
+     * @param class-string<TransactionDataInterface> $name
+     */
+    public function getData(string $name): ?TransactionDataInterface
+    {
+        return $this->getStateModel($name);
+    }
+
+    public function getStepData(string $stepName): ?TransactionDataInterface
     {
         return $this->get($stepName)?->data;
     }
@@ -44,6 +54,7 @@ final class StepStateCollection extends Collection
      */
     protected function indexBy($item): string
     {
+        $this->setStateModel($item->data);
         return $item->step;
     }
 }

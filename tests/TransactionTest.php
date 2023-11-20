@@ -7,11 +7,12 @@ namespace kuaukutsu\poc\saga\tests;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
+use PHPUnit\Framework\TestCase;
 use kuaukutsu\poc\saga\tests\stub\OneTransactionStep;
 use kuaukutsu\poc\saga\tests\stub\TestTransaction;
+use kuaukutsu\poc\saga\tests\stub\TestTransactionData;
 use kuaukutsu\poc\saga\tests\stub\TwoTransactionStep;
 use kuaukutsu\poc\saga\TransactionRunner;
-use PHPUnit\Framework\TestCase;
 
 final class TransactionTest extends TestCase
 {
@@ -45,7 +46,7 @@ final class TransactionTest extends TestCase
 
         /** @var array{"name": string, "datetime": string} $stateOne */
         $stateOne = $transaction->state
-            ->getData(OneTransactionStep::class)
+            ->getStepData(OneTransactionStep::class)
             ->toArray();
 
         self::assertArrayHasKey('name', $stateOne);
@@ -53,11 +54,19 @@ final class TransactionTest extends TestCase
         self::assertEquals('one', $stateOne['name']);
 
         $stateTwo = $transaction->state
-            ->getData(TwoTransactionStep::class)
+            ->getStepData(TwoTransactionStep::class)
             ->toArray();
 
         self::assertArrayHasKey('name', $stateTwo);
         self::assertArrayHasKey('datetime', $stateTwo);
         self::assertEquals('two', $stateTwo['name']);
+
+        /** @var TestTransactionData|null $model */
+        $model = $transaction->state
+            ->getData(TestTransactionData::class);
+
+        self::assertNotEmpty($model);
+        self::assertEquals('two', $model->name);
+        self::assertEquals($stateTwo, $model->toArray());
     }
 }

@@ -9,17 +9,12 @@ use RuntimeException;
 
 final class ExceptionTransactionStep extends TransactionStepBase
 {
-    public function __construct(
-        public readonly string $name,
-    ) {
-    }
-
     public function commit(): bool
     {
         $this->save(
             TestTransactionData::hydrate(
                 [
-                    'name' => $this->name,
+                    'name' => 'none',
                     'datetime' => gmdate('c'),
                 ]
             )

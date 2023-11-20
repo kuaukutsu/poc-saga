@@ -21,9 +21,6 @@ final class TestTransactionException implements TransactionInterface
             ),
             new Step(
                 ExceptionTransactionStep::class,
-                [
-                    'name' => 'exception',
-                ]
             ),
             new Step(
                 TwoTransactionStep::class,

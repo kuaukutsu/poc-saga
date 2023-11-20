@@ -25,6 +25,13 @@ final class StepFactory
      */
     public function create(Step $stepConfiguration): StepInterface
     {
+        if ($stepConfiguration->params === []) {
+            /**
+             * @var StepInterface
+             */
+            return $this->container->get($stepConfiguration->class);
+        }
+
         /**
          * @var StepInterface
          */
