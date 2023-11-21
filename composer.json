@@ -28,7 +28,6 @@
     "vimeo/psalm": "^5.15",
     "friendsofphp/php-cs-fixer": "^3.13",
     "icanhazstring/composer-unused": "^0.8",
-    "kuaukutsu/ds-dto": "^2.0.1",
     "phpunit/phpunit": "^10.4",
     "rector/rector": "^0.18",
     "roave/infection-static-analysis-plugin": "^1.3",

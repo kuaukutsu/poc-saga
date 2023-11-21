@@ -16,16 +16,27 @@ interface StateInterface
     public function set(string $stepName, TransactionDataInterface $data): void;
 
     /**
+     * Получить последнее/актуальное значение сохраненной модели.
+     *
+     * @param class-string<TransactionDataInterface> $name
+     * @throws NotFoundException Если значение не найдено.
+     */
+    public function get(string $name): TransactionDataInterface;
+
+    /**
+     * Получить значение сохраненной модели в заданном шаге.
+     * Отоличие от get(...) в том, что вернётся именно то значение, которое было сохранено в указанном шаге.
+     *
      * @param class-string<StepInterface> $stepName
      * @throws NotFoundException Если значение не найдено.
      */
-    public function get(string $stepName): TransactionDataInterface;
+    public function getStepData(string $stepName): TransactionDataInterface;
 
     /**
      * Каждый шаг может сохранять своё значение от выполнения действия.
      * В стеке содержится вся информация по выполненным шагам.
      */
-    public function stack(): StepStateCollection;
+    public function stack(): StateCollection;
 
     public function clean(): void;
 }

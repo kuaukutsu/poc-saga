@@ -15,12 +15,12 @@ final class TwoTransactionStep extends TransactionStepBase
 
     public function commit(): bool
     {
+        Storage::set($this->name, 'test');
+
         $this->save(
-            TestTransactionData::hydrate(
-                [
-                    'name' => $this->name,
-                    'datetime' => gmdate('c'),
-                ]
+            new TestTransactionData(
+                name: $this->name,
+                datetime: gmdate('c')
             )
         );
 
@@ -29,6 +29,16 @@ final class TwoTransactionStep extends TransactionStepBase
 
     public function rollback(): bool
     {
+        Storage::delete($this->getModel()->name);
+
         return true;
+    }
+
+    private function getModel(): TestTransactionData
+    {
+        /**
+         * TestTransactionData
+         */
+        return $this->get(TestTransactionData::class);
     }
 }

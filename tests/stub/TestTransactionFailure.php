@@ -20,15 +20,15 @@ final class TestTransactionFailure implements TransactionInterface
                 ]
             ),
             new Step(
-                FailureTransactionStep::class,
-                [
-                    'name' => 'failure',
-                ]
-            ),
-            new Step(
                 TwoTransactionStep::class,
                 [
                     'name' => 'two',
+                ]
+            ),
+            new Step(
+                FailureTransactionStep::class,
+                [
+                    'name' => 'failure',
                 ]
             ),
         );

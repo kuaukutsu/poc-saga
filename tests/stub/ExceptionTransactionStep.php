@@ -12,11 +12,9 @@ final class ExceptionTransactionStep extends TransactionStepBase
     public function commit(): bool
     {
         $this->save(
-            TestTransactionData::hydrate(
-                [
-                    'name' => 'none',
-                    'datetime' => gmdate('c'),
-                ]
+            new TestTransactionData(
+                name: 'none',
+                datetime: gmdate('c')
             )
         );
 

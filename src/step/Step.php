@@ -11,7 +11,7 @@ final class Step
 {
     /**
      * @param class-string<StepInterface> $class
-     * @param array<string, string|int|string[]|int[]|object> $params Конфигурация объекта
+     * @param array<string, string|int|string[]|int[]|array|object> $params Конфигурация объекта
      */
     public function __construct(
         public readonly string $class,

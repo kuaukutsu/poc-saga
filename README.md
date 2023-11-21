@@ -103,7 +103,7 @@ final class OneStep extends TransactionStepBase
     public function rollback(): bool
     {
         /** @var TestTransactionData $data */
-        $data = $this->get(self::class); // получаем Состояние сохранённое при commit
+        $data = $this->current(); // получаем Состояние сохранённое при commit
         
         // Полезная работа: удаление из хранилища, компенсационная задача в очередь 
     
@@ -124,32 +124,7 @@ $transaction = $transactionRunner->run(
 );
 ```
 
-Так же есть возможность подписаться на события commit и rollback, для того чтобы получить доступ к результату из вне.
-
-```php
-$transaction = new TestTransaction();
-
-/** @var TransactionRunner $transactionRunner */
-$transactionRunner->run(
-    $transaction,
-    new TransactionCommitCallback(
-        static function (StepStateCollection $data) {
-            ...
-        }
-    ),
-    new TransactionRollbackCallback(
-        static function (StepStateCollection $data, Exception $exception) {
-            ...
-        }
-    ),
-);
-```
-
 ## Получаем данные из транзакции
-
-Есть две точки доступа к данным транзакции:
-- получить результат шага (при условии, что была запись)
-- получить итоговое состояние модели (так же, при условии, что была запись)
 
 ```php
 
@@ -162,15 +137,14 @@ $transaction = $transactionRunner->run(
 );
 
 /** 
- * @var TestTransactionData $dataFromTestStep данные, которые были записаны по результатам шага OneStep.
- */
-$dataFromTestStep = $transaction->state->getStepData(OneStep::class);
-
-/** 
  * @var TestTransactionData $testData данные, которые были записаны как модель TestTransactionData, в конечном шаге.
  */
-$testData = $transaction->state->getData(TestTransactionData::class);
+$testData = $transaction->state->get(TestTransactionData::class);
 ```
+
+## Пример (песочница)
+
+https://github.com/kuaukutsu/yii2-component-demo
 
 
 ## Docker
