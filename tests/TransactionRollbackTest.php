@@ -9,7 +9,6 @@ use DI\DependencyException;
 use DI\NotFoundException;
 use kuaukutsu\poc\saga\exception\ProcessingException;
 use kuaukutsu\poc\saga\tests\stub\Storage;
-use kuaukutsu\poc\saga\tests\stub\TestTransaction;
 use kuaukutsu\poc\saga\tests\stub\TestTransactionRollback;
 use kuaukutsu\poc\saga\TransactionRunner;
 use PHPUnit\Framework\TestCase;
@@ -26,17 +25,6 @@ final class TransactionRollbackTest extends TestCase
     {
         Storage::clean();
         $this->runner = (new Container())->get(TransactionRunner::class);
-    }
-
-    public function testRollback(): void
-    {
-        $transaction = $this->runner->run(
-            new TestTransaction()
-        );
-
-        self::assertNotEmpty($transaction->uuid);
-        self::assertEquals('test', Storage::get('save'));
-        self::assertEquals(1, Storage::count());
     }
 
     public function testFailure(): void

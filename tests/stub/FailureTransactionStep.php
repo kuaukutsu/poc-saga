@@ -17,15 +17,6 @@ final class FailureTransactionStep extends TransactionStepBase
     {
         Storage::set($this->name, 'test-failure');
 
-        $this->save(
-            TestTransactionData::hydrate(
-                [
-                    'name' => $this->name,
-                    'datetime' => gmdate('c'),
-                ]
-            )
-        );
-
         return false;
     }
 

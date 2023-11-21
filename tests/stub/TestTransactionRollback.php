@@ -18,6 +18,18 @@ final class TestTransactionRollback implements TransactionInterface
     {
         return new StepCollection(
             new Step(
+                OneTransactionStep::class,
+                [
+                    'name' => 'test',
+                ]
+            ),
+            new Step(
+                TwoTransactionStep::class,
+                [
+                    'name' => 'test',
+                ]
+            ),
+            new Step(
                 SaveTransactionStep::class,
                 [
                     'name' => $this->name,

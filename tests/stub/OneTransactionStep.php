@@ -16,12 +16,14 @@ final class OneTransactionStep extends TransactionStepBase
 
     public function commit(): bool
     {
+        $date = gmdate($this->dateFormat);
+
+        Storage::set($date, 'test');
+
         $this->save(
-            TestTransactionData::hydrate(
-                [
-                    'name' => $this->name,
-                    'datetime' => gmdate($this->dateFormat),
-                ]
+            new TestTransactionData(
+                name: $this->name,
+                datetime: $date
             )
         );
 
@@ -30,6 +32,16 @@ final class OneTransactionStep extends TransactionStepBase
 
     public function rollback(): bool
     {
+        Storage::delete($this->getCurrentModel()->datetime);
+
         return true;
+    }
+
+    private function getCurrentModel(): TestTransactionData
+    {
+        /**
+         * TestTransactionData
+         */
+        return $this->current();
     }
 }

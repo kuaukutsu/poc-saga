@@ -10,10 +10,4 @@ namespace kuaukutsu\poc\saga;
  */
 interface TransactionDataInterface
 {
-    /**
-     * Converts the object into an array.
-     *
-     * @return array<string, mixed> the array representation of the object
-     */
-    public function toArray(): array;
 }

@@ -37,11 +37,19 @@ abstract class TransactionStepBase implements StepInterface
     }
 
     /**
-     * @param class-string<StepInterface> $stepName
+     * @param class-string<TransactionDataInterface> $modelName
      * @throws NotFoundException
      */
-    final protected function get(string $stepName): TransactionDataInterface
+    final protected function get(string $modelName): TransactionDataInterface
     {
-        return $this->state->get($stepName);
+        return $this->state->get($modelName);
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    final protected function current(): TransactionDataInterface
+    {
+        return $this->state->getStepData(static::class);
     }
 }
