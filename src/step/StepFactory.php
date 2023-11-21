@@ -7,6 +7,7 @@ namespace kuaukutsu\poc\saga\step;
 use SplDoublyLinkedList;
 use SplQueue;
 use DI\Container;
+use DI\DependencyException;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
 use kuaukutsu\poc\saga\exception\NotFoundException;
@@ -25,6 +26,12 @@ final class StepFactory
      */
     public function create(Step $stepConfiguration): StepInterface
     {
+        if (is_a($stepConfiguration->class, StepInterface::class, true) === false) {
+            throw new DependencyException(
+                "[$stepConfiguration->class] configuration class must implement StepInterface."
+            );
+        }
+
         if ($stepConfiguration->params === []) {
             /**
              * @var StepInterface

@@ -5,21 +5,19 @@ declare(strict_types=1);
 namespace kuaukutsu\poc\saga\tests;
 
 use DI\Container;
-use DI\DependencyException;
-use DI\NotFoundException;
+use Psr\Container\ContainerExceptionInterface;
+use PHPUnit\Framework\TestCase;
 use kuaukutsu\poc\saga\exception\ProcessingException;
 use kuaukutsu\poc\saga\tests\stub\Storage;
 use kuaukutsu\poc\saga\tests\stub\TestTransactionRollback;
 use kuaukutsu\poc\saga\TransactionRunner;
-use PHPUnit\Framework\TestCase;
 
 final class TransactionRollbackTest extends TestCase
 {
     private TransactionRunner $runner;
 
     /**
-     * @throws DependencyException
-     * @throws NotFoundException
+     * @throws ContainerExceptionInterface
      */
     protected function setUp(): void
     {

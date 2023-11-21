@@ -11,12 +11,12 @@ final class ProcessingException extends RuntimeException
 {
     public function __construct(
         string $uuid,
-        string $stepClassName,
+        string $className,
         ?Throwable $previous = null,
     ) {
-        $message = "[$uuid] $stepClassName step failed.";
+        $message = "[$uuid] $className failed.";
         if ($previous !== null) {
-            $message .= ' ' . $previous->getMessage();
+            $message .= PHP_EOL . $previous->getMessage();
         }
 
         parent::__construct($message, 0, $previous);
