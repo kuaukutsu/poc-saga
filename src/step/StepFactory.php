@@ -6,8 +6,9 @@ namespace kuaukutsu\poc\saga\step;
 
 use SplDoublyLinkedList;
 use SplQueue;
-use DI\Container;
+use DI\FactoryInterface;
 use DI\DependencyException;
+use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
 use kuaukutsu\poc\saga\exception\NotFoundException;
@@ -16,8 +17,10 @@ use kuaukutsu\poc\saga\TransactionInterface;
 
 final class StepFactory
 {
-    public function __construct(private readonly Container $container)
-    {
+    public function __construct(
+        private readonly ContainerInterface $container,
+        private readonly FactoryInterface $factory,
+    ) {
     }
 
     /**
@@ -42,7 +45,7 @@ final class StepFactory
         /**
          * @var StepInterface
          */
-        return $this->container->make(
+        return $this->factory->make(
             $stepConfiguration->class,
             $stepConfiguration->params,
         );
